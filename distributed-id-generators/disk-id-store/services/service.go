@@ -39,8 +39,8 @@ func (s *Service) doWork() {
 	if err != nil {
 		log.Printf("Error in calling rpc function. Error : %s\n", err)
 	}
-	tt := time.Since(t).Milliseconds()
-	log.Printf("[%s] Time taken for Id Generation is: [%d] \n", s.Name, tt)
+	tt := time.Since(t)
+	log.Printf("[%s] Time taken for Id Generation is: [%s] \n", s.Name, tt) // Just printing since time as string gives me pretty-print
 	stat := fmt.Sprintf("INSERT INTO DBX (id) VALUES(%d)", idGenResp.Id)
 	log.Printf("%s called DB with insert query: [%s] \n", s.Name, stat)
 	// MIMIC DB CALL
@@ -48,11 +48,8 @@ func (s *Service) doWork() {
 }
 
 func (s *Service) Work() {
-	//At various frequencies call doWork
-	for i := range 10 {
-		if i%3 == 0 {
-			s.doWork()
-			time.Sleep(1000 * time.Millisecond)
-		}
+	for range 10 {
+		s.doWork()
+		time.Sleep(1000 * time.Millisecond)
 	}
 }

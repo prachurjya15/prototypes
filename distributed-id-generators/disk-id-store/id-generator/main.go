@@ -11,6 +11,8 @@ import (
 	"sync"
 )
 
+var Buffer int = 100 // Every Buffer increase of val, we will write to file
+
 type IdGenerator struct {
 	currId int
 	mu     sync.Mutex
@@ -28,11 +30,14 @@ func (gen *IdGenerator) GetNextId(req *IdGenReq, resp *IdGenResp) error {
 	gen.mu.Lock()
 	gen.currId = gen.currId + 1
 	resp.Id = gen.currId
-	// We are doing this rather than WriteFile since we already have the file opened in the main call
-	gen.file.Seek(0, 0)
-	gen.file.Truncate(0)
-	gen.file.WriteString(strconv.Itoa(gen.currId))
-	gen.file.Sync()
+	// DONT WRITE TILL BUFFER
+	if gen.currId%Buffer == 0 {
+		// We are doing this rather than WriteFile since we already have the file opened in the main call
+		gen.file.Seek(0, 0)
+		gen.file.Truncate(0)
+		gen.file.WriteString(strconv.Itoa(gen.currId))
+		gen.file.Sync()
+	}
 	gen.mu.Unlock()
 	return nil
 
@@ -53,10 +58,11 @@ func main() {
 	var currId int
 
 	if numBytes == 0 {
-		currId = 1
+		currId = 0
 	} else {
 		s := string(b[:numBytes])
 		currId, err = strconv.Atoi(s)
+		currId = currId + Buffer + 1 //Safest Value
 		if err != nil {
 			log.Fatalf("Can't convert string: [%s] to int", s)
 		}

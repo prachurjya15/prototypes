@@ -15,11 +15,11 @@ func main() {
 	svc := []services.Service{
 		*services.NewService("Service-A", connStr),
 		*services.NewService("Service-B", connStr),
-		// *services.NewService("Service-C", connStr),
-		// *services.NewService("Service-D", connStr),
-		// *services.NewService("Service-E", connStr),
-		// *services.NewService("Service-F", connStr),
-		// *services.NewService("Service-G", connStr),
+		*services.NewService("Service-C", connStr),
+		*services.NewService("Service-D", connStr),
+		*services.NewService("Service-E", connStr),
+		*services.NewService("Service-F", connStr),
+		*services.NewService("Service-G", connStr),
 	}
 
 	var wg sync.WaitGroup
